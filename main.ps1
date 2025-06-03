@@ -24,3 +24,6 @@ try {
         Write-Warning "Lite utrymme kvar på disk: $($disk.FreeSpaceGB)GB"
     }
 }
+catch {
+    Write-Error "Ett fel inträffade: $_"
+}
