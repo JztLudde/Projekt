@@ -2,12 +2,10 @@
 
 ## Vad projektet gör
 
-Det här PowerShell-skriptet är gjort som en del av kursen Scripting & Automatisering. Det automatiserar [kort vad skriptet gör, t.ex. "backup av filer", "skapar mappar", "läser data från en fil"].
+Det här PowerShell-skriptet är gjort som en del av kursen Scripting & Automatisering. Det automatiserar hämtning av CPU, RAM & Disk utrymme/användning och loggar resultatet i en loggfil. Skickar varningar vid hög användning/Lite plats kvar.
 
 ## Hur man kör det
 
 1. Öppna PowerShell
-2. Navigera till mappen där skriptet ligger
-3. Kör:
-```powershell
-.\start-script.ps1
+2. Kör koden
+3. Kolla i loggfilen som skapas/kolla i terminalen efter varningar
