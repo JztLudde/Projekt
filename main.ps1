@@ -1,24 +1,35 @@
-Import-Module ".\SystemCheck.psm1"
+Import-Module ".\SystemCheck.psm1" -Force
+
+$logPath = ".\system_log.txt"
+$thresholdCPU = 85
+$thresholdMemory = 1 # GB
+$thresholdDiskSpacePercent = 10 # %
 
 try {
     $usage = Get-SystemUsage
-    $disk = Get-DiskSpace
+    $disks = Get-DiskSpace
 
-    Write-Log -Message "CPU Usage: $($usage.CPUUsage)% - Free Memory: $($usage.FreeMemoryGB)GB" -Path $logPath
-    Write-Log -Message "Disk Space: $($disk.FreeSpaceGB)GB" -Path $logPath
+    # Logga CPU och minne
+    Write-Log -Message "CPU Usage: $($usage.CPUUsage)% | Free Memory: $($usage.FreeMemoryGB) GB" -Path $logPath
 
-      if ($usage.CPUUsage -gt $thresholdCPU) {
-        Write-Warning "CPU-användningen är hög: $($usage.CPUUsage)%"
+    # Logga och kontrollera varje disk
+    foreach ($disk in $disks) {
+        Write-Log -Message "Disk $($disk.DeviceID): $($disk.FreeSpaceGB) GB free ($($disk.PercentFree)%)" -Path $logPath
+
+        if ($disk.PercentFree -lt $thresholdDiskSpacePercent) {
+            Write-Warning "Disk $($disk.DeviceID) har lågt diskutrymme: $($disk.PercentFree)% ledigt."
+        }
     }
 
-      if ($usage.FreeMemoryGB -lt $thresholdMemory) {
-        Write-Warning "Lite minne kvar: $($usage.FreeMemoryGB)GB"
+    # Varningar för CPU och minne
+    if ($usage.CPUUsage -gt $thresholdCPU) {
+        Write-Warning "CPU-användningen är kritiskt hög: $($usage.CPUUsage)%."
     }
 
-    if ($disk.FreeSpaceGB -lt $thresholdDiskSpace) {
-        Write-Warning "Lite utrymme kvar på disk: $($disk.FreeSpaceGB)GB"
+    if ($usage.FreeMemoryGB -lt $thresholdMemory) {
+        Write-Warning "Minnet är lågt: Endast $($usage.FreeMemoryGB) GB kvar."
     }
 }
 catch {
-    Write-Error "Ett fel inträffade: $_"
+    Write-Error "Ett oväntat fel inträffade: $_"
 }
